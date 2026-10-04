@@ -1,0 +1,39 @@
+{
+  "recovery_keys": [
+    {
+      "key_id": "8958cdba40c6b8f89211ac5a710d3c3739004515a7d3e48eadf883d6ff999b33",
+      "public_key": "86APxORasHBOTgB_zLmYBcxIhExTrxiT2zBOEPuC0e0"
+    }
+  ],
+  "platform_keys": [
+    {
+      "key_id": "c6afc19b31429869751f06879c75cd64ea92654423d15b44be775bf1310a60da",
+      "public_key": "5UmmtpTDOHmEVvAnuoKppLReB0GiSv7OGpclmNOpv7A",
+      "record_hash": "5f3ae6bd35acb6dd3c741ce20729d2e9bcdc6522814aa486b81b72b9b85a7c2b",
+      "previous_key_id": null
+    }
+  ],
+  "revocations": [],
+  "rekor_write_url": "https://log2025-1.rekor.sigstore.dev",
+  "rekor_shards": [
+    {
+      "url": "https://log2025-1.rekor.sigstore.dev",
+      "log_id": "zxGZFVvd0FEmjR8WrFwMdcAJ9vtaY/QXf44Y1wUeP6A=",
+      "public_key": "MCowBQYDK2VwAyEAt8rlp1knGwjfbcXAYPYAkn0XiLz1x8O4t0YkEhie244=",
+      "active_from": "2025-09-23T00:00:00Z",
+      "active_until": null
+    }
+  ],
+  "rekor_submission_keys": [
+    {
+      "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE+Wyx20D9fmP9+kTIWSiZuhRofVu1eiNRg8Ypr5iRiMcz+4jzlpdT2HR4BMFr2ih03kxKIQl8KiKdTI1YZ/w6dQ==",
+      "key_details": "PKIX_ECDSA_P256_SHA_256",
+      "active_from": "2026-10-03T07:05:54Z",
+      "active_until": null
+    }
+  ],
+  "mirror_repo": "Galitski-group/pubphys-log",
+  "orcid_client_ids": [
+    "APP-WHRXAWF8SWZK87OU"
+  ]
+}
