@@ -8,11 +8,16 @@ and keys you pin yourself. The plain-language explanation is at https://pubphys.
 |---|---|
 | `checkpoints/<size>.note` | Signed checkpoints of the log (C2SP signed notes, origin `pubphys.com/log/v1`) |
 | `rekor/<size>/<n>.json` | The Sigstore Rekor v2 entries that logged each checkpoint's SHA-256 |
+| `ots/<size>.note.ots` | OpenTimestamps proofs of the checkpoints, once they are in Bitcoin |
 | `keys/<record hash>.json` | Bundles of the records that introduce or revoke PubPhys keys |
-| `jwks/<record hash>.json` | Bundles of the records of ORCID's public keys, with the archive captures that show them |
+| `jwks/<record hash>.json` | Bundles of the records of ORCID's public keys, with the Wayback Machine captures that show them |
 | `trust.json` | A convenience copy of the keys and Rekor shards; never the authority |
 | `verifier/` | The verifier and its helpers (Node.js 20 or later, no dependencies) |
 | `SPEC.md` | The protocol specification, version 1 |
+
+Nothing else is here: no personal data and no documents. Records of people, problems, solutions and
+uploaded files stay on pubphys.com; the log carries only their fingerprints. Line endings are never
+converted (`.gitattributes`), because checkpoints are hashed byte for byte.
 
 ## Check a record yourself
 
