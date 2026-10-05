@@ -27,8 +27,8 @@ converted (`.gitattributes`), because checkpoints are hashed byte for byte.
 3. Run, in a clone of this repository:
 
 ```
-node verifier/fetch-trust.mjs --recovery-key-id <fingerprint> --bitcoin > trust.json
-node verifier/fetch-witness.mjs --bundle <bundle.json> --trust trust.json --sigstore-trusted-root trusted_root.json --site https://pubphys.com > trust-witness.json
+node verifier/fetch-trust.mjs --recovery-key-id <fingerprint> --bitcoin > my-trust.json   # not trust.json: that is the file it reads
+node verifier/fetch-witness.mjs --bundle <bundle.json> --trust my-trust.json --sigstore-trusted-root trusted_root.json --site https://pubphys.com > trust-witness.json
 node verifier/fetch-orcid-keys.mjs --trust trust-witness.json --live > trust-full.json   # records signed with ORCID
 node verifier/pubphys-verify.mjs <bundle.json> --trust trust-full.json --bitcoin
 ```
