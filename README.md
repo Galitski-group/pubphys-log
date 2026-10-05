@@ -12,7 +12,7 @@ and keys you pin yourself. The plain-language explanation is at https://pubphys.
 | `keys/<record hash>.json` | Bundles of the records that introduce or revoke PubPhys keys |
 | `jwks/<record hash>.json` | Bundles of the records of ORCID's public keys, with the Wayback Machine captures that show them |
 | `trust.json` | A convenience copy of the keys and Rekor shards; never the authority |
-| `verifier/` | The verifier and its helpers (Node.js 20 or later, no dependencies) |
+| `verifier/` | A copy of the verifier, written by PubPhys; prefer the signed release at https://github.com/Galitski-group/pubphys-verifier/releases |
 | `SPEC.md` | The protocol specification, version 1 |
 
 Nothing else is here: no personal data and no documents. Records of people, problems, solutions and
