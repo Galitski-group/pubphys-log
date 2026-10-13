@@ -377,6 +377,52 @@ export default {
     },
     "additionalProperties": false
   },
+  "content.claim.3": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://pubphys.com/protocol/schemas/content.claim.3.json",
+    "title": "content.claim.3",
+    "description": "pubphys.content.claim/3 (SPEC section 6): claim/1 and a nonce.",
+    "type": "object",
+    "required": [
+      "assisted_by",
+      "body",
+      "kind",
+      "nonce",
+      "problem_ref",
+      "references"
+    ],
+    "properties": {
+      "problem_ref": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "kind": {
+        "type": "string",
+        "enum": [
+          "progress",
+          "solution",
+          "disproof"
+        ]
+      },
+      "body": {
+        "type": "string"
+      },
+      "references": {
+        "type": "string"
+      },
+      "assisted_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "nonce": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "additionalProperties": false
+  },
   "content.contest": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://pubphys.com/protocol/schemas/content.contest.json",
@@ -730,6 +776,146 @@ export default {
           },
           "additionalProperties": false
         }
+      }
+    },
+    "additionalProperties": false
+  },
+  "content.revision.3": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://pubphys.com/protocol/schemas/content.revision.3.json",
+    "title": "content.revision.3",
+    "description": "pubphys.content.revision/3 (SPEC section 6): revision/1 and a nonce; only n = 1.",
+    "type": "object",
+    "required": [
+      "answer_type",
+      "assisted_by",
+      "external_id",
+      "kind",
+      "literature_status",
+      "n",
+      "nonce",
+      "parents",
+      "plain",
+      "posed_since",
+      "precise",
+      "problem_ref",
+      "references",
+      "settled_by",
+      "status_note",
+      "title",
+      "topic_ref"
+    ],
+    "properties": {
+      "problem_ref": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "n": {
+        "type": "string",
+        "pattern": "^[1-9][0-9]*$"
+      },
+      "external_id": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "topic_ref": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "title": {
+        "type": "string"
+      },
+      "plain": {
+        "type": "string"
+      },
+      "precise": {
+        "type": "string"
+      },
+      "settled_by": {
+        "type": "string"
+      },
+      "kind": {
+        "type": "string",
+        "enum": [
+          "well-posed",
+          "phenomenon"
+        ]
+      },
+      "answer_type": {
+        "type": "string",
+        "enum": [
+          "yes-no",
+          "value",
+          "mechanism",
+          "classification",
+          "proof",
+          "identification"
+        ]
+      },
+      "references": {
+        "type": "string"
+      },
+      "literature_status": {
+        "type": "string",
+        "enum": [
+          "open",
+          "contested",
+          "partially-resolved"
+        ]
+      },
+      "status_note": {
+        "type": "string"
+      },
+      "posed_since": {
+        "type": "string"
+      },
+      "assisted_by": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "parents": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "note",
+            "parent_revision",
+            "relation"
+          ],
+          "properties": {
+            "parent_revision": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "relation": {
+              "type": "string",
+              "enum": [
+                "special_case",
+                "generalization",
+                "combination",
+                "variant"
+              ]
+            },
+            "note": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "nonce": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
       }
     },
     "additionalProperties": false

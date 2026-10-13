@@ -4,10 +4,13 @@
 // only while fresh, envelopes and checkpoints of revoked keys (protocol/verifier/TRUST.md), and the
 // inclusion promise (kept or not judged).
 //
-// verifyFull(bundleText, trust, { getHeader }) -> { parts, notes, recordHash, promise }
+// verifyFull(bundleText, trust, { getHeader }) -> { parts, notes, recordHash, promise, anchor }
 //   trust is modified (earliest_anchor, orcid_keys); getHeader is an Esplora header source or null.
+//   anchor is the earliest valid Bitcoin anchor ({ height, time }) when the time part is verified.
+// verifyRevealFull(revealText, sealedText, trust, { getHeader }) -> a reveal pair (plan 6.4) with the
+//   seal date: the sealed record's earliest valid Bitcoin anchor, never its created.
 
-import { verifyBundle, parseJsonStrict, fromB64url, fromHex, canonical, verifyNote, keyId, LOG_NAME, sha256hex } from "./pubphys_protocol.js";
+import { verifyBundle, parseJsonStrict, fromB64url, fromHex, canonical, verifyNote, keyId, LOG_NAME, sha256hex, revealPairRelation, revealPairStatus } from "./pubphys_protocol.js";
 import { verifyOts } from "./ots.js";
 import { judgePromise } from "./promise_evidence.js";
 
@@ -117,5 +120,20 @@ export async function verifyFull(bundleText, trust, { getHeader = null } = {}) {
   const promise = typeof bundleForTime?.log?.promise !== "string" ? null
     : parts.log === "verified" ? await judgePromise(bundleForTime, trust) : { status: "not_judged", notes: ["promise: not judged (log not verified)"] };
   if (promise) notes.push(...promise.notes);
-  return { parts, notes, recordHash, promise };
+  const anchor = parts.time === "verified" ? { height: time.height, time: new Date(time.time * 1000).toISOString().replace(/\.\d{3}Z$/, "Z") } : null;
+  return { parts, notes, recordHash, promise, anchor };
+}
+
+// Each bundle gets its own copy of the trust: verifyFull sets earliest_anchor from the bundle's own
+// anchors, and the reveal's identity window must not use the sealed record's anchor.
+export async function verifyRevealFull(revealText, sealedText, trust, { getHeader = null } = {}) {
+  const copy = () => JSON.parse(JSON.stringify(trust ?? {}));
+  const reveal = await verifyFull(revealText, copy(), { getHeader });
+  const sealed = await verifyFull(sealedText, copy(), { getHeader });
+  const relation = revealPairRelation(revealText, sealedText, reveal, sealed);
+  const notes = [...relation.map(n => "pair: " + n), ...reveal.notes.map(n => "reveal: " + n), ...sealed.notes.map(n => "sealed: " + n)];
+  const sealDate = { status: sealed.parts.time, time: sealed.anchor ? sealed.anchor.time : null, height: sealed.anchor ? sealed.anchor.height : null };
+  notes.push(sealDate.time ? `seal date: ${sealDate.time} (the sealed record's earliest valid Bitcoin anchor, block ${sealDate.height})`
+    : `seal date: ${sealDate.status} (the sealed record's earliest valid Bitcoin anchor; its created is never the seal date)`);
+  return { status: revealPairStatus(relation, reveal, sealed), notes, reveal, sealed, sealDate };
 }

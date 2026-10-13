@@ -16,23 +16,28 @@
 //               Esplora-compatible explorer (default https://blockstream.info/api; that means trusting
 //               the explorer for the headers, a Bitcoin node behind an Esplora API removes it). Without
 //               it, time is reported as not_checked.
+// --sealed <bundle> verifies a reveal pair (phase 4b): bundle.json is the reveal and <bundle> the sealed
+//               record it reveals. Both bundles are verified, the reveal's target must be the sealed
+//               record's hash and both must name the same ORCID iD. The seal date is the sealed record's
+//               earliest valid Bitcoin anchor (with --bitcoin), never its created. Exit code 0 only when
+//               the pair is verified (structure, content, identity, platform and log of both bundles).
 
 import fs from "node:fs";
 import { parseJsonStrict } from "./pubphys_protocol.js";
 import { esploraHeaders } from "./ots.js";
-import { verifyFull } from "./verify_full.js";
+import { verifyFull, verifyRevealFull } from "./verify_full.js";
 
 const args = process.argv.slice(2);
 const opt = name => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };
 const bitcoinArg = args.includes("--bitcoin") ? (args[args.indexOf("--bitcoin") + 1] || "") : null;
 const bitcoinUrl = bitcoinArg === null ? null : (/^https?:\/\//.test(bitcoinArg) ? bitcoinArg : "https://blockstream.info/api");
-const valueArgs = new Set([opt("--trust"), opt("--require"), /^https?:\/\//.test(bitcoinArg || "") ? bitcoinArg : undefined]);
+const valueArgs = new Set([opt("--trust"), opt("--require"), opt("--sealed"), /^https?:\/\//.test(bitcoinArg || "") ? bitcoinArg : undefined]);
 const positionals = args.filter(a => !a.startsWith("--") && !valueArgs.has(a));
 if (positionals.length > 1) { console.error("pubphys-verify: exactly one bundle path expected"); process.exit(2); }
 const bundlePath = positionals[0];
 const trustPath = opt("--trust");
 if (!bundlePath || !trustPath) {
-  console.error("usage: pubphys-verify <bundle.json> --trust <trust.json> [--live-orcid] [--require parts]");
+  console.error("usage: pubphys-verify <bundle.json> --trust <trust.json> [--live-orcid] [--require parts] [--sealed <sealed-bundle.json>]");
   process.exit(2);
 }
 const required = (opt("--require") || "structure,content,platform,log").split(",").filter(Boolean);
@@ -52,6 +57,22 @@ if (args.includes("--live-orcid")) {
   } catch (e) {
     usage(`cannot fetch ORCID keys: ${e.message}`);
   }
+}
+
+const sealedPath = opt("--sealed");
+if (sealedPath !== undefined) {
+  if (requireGiven) usage("--require does not apply to a reveal pair");
+  let sealedText;
+  try { sealedText = decode(fs.readFileSync(sealedPath)); } catch (e) { usage(`cannot read sealed bundle (it must be UTF-8 JSON): ${e.message}`); }
+  const pair = await verifyRevealFull(bundleText, sealedText, trust, { getHeader: bitcoinUrl ? esploraHeaders(bitcoinUrl) : null });
+  for (const [name, r] of [["reveal", pair.reveal], ["sealed", pair.sealed]]) {
+    console.log(`${name} record ${r.recordHash || "(not computed)"}`);
+    for (const [part, result] of Object.entries(r.parts)) console.log(`  ${part.padEnd(10)} ${result}`);
+  }
+  console.log(`seal date ${pair.sealDate.time || pair.sealDate.status}`);
+  for (const n of pair.notes) console.log(`  note: ${n}`);
+  console.log(pair.status === "verified" ? "result: reveal pair verified" : `result: reveal pair NOT verified (${pair.status})`);
+  process.exit(pair.status === "verified" ? 0 : 1);
 }
 
 const { parts, notes, recordHash, promise } = await verifyFull(bundleText, trust, { getHeader: bitcoinUrl ? esploraHeaders(bitcoinUrl) : null });

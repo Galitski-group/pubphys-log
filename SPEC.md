@@ -110,7 +110,8 @@ duplicated array.
 ## 5. Content
 
 `content` is a canonical object whose fields are fixed by its content schema
-(`protocol/schemas/content.<type>.json` for version 1). Raw bytes (uploads, manifests, JWKS
+(`protocol/schemas/content.<type>.json` for version 1, `content.<type>.<version>.json` for a later
+version). Raw bytes (uploads, manifests, JWKS
 documents) are never content: they are files listed in `record.files`, and the content object
 names them by file id.
 
@@ -172,6 +173,27 @@ Enumerations are listed in the schemas. Review decisions and their exact `params
 
 `new_key_signature` in `platform-key` is the new key's Ed25519 signature, base64url, over the
 ASCII bytes `pubphys.platform-key/1\n` followed by `key_id`.
+
+### Content version 3 (sealed records)
+
+A sealed record (a claim or a new problem kept private until its author reveals it with a `reveal`
+record) uses content version 3. Its content adds a `nonce`, so that a short sealed text cannot be
+found by hashing guesses against `content_sha256`.
+
+| Content schema | Fields |
+|---|---|
+| `pubphys.content.claim/3` | every field of `claim/1`, plus `nonce` |
+| `pubphys.content.revision/3` | every field of `revision/1`, plus `nonce` |
+
+- `nonce` is required: 64 lowercase hex characters (`^[0-9a-f]{64}$`), 32 random bytes chosen by
+  the record's creator. It is one more string key of the canonical object (section 2).
+- `revision/3`: every rule of `revision` above applies, and `n` is `"1"`.
+- No other field is allowed, as in every content schema.
+- Version 2 is never assigned, for any content type. The frozen vectors use `claim/2` as the
+  example of an unknown version, which stays unknown (`structure: not_checked`, section 11).
+
+Vectors: `reveal.json`. A verifier without version 3 reports a sealed record's structure as
+`not_checked` (section 11); the content digest and the other parts are still checked.
 
 ## 7. Attested record
 

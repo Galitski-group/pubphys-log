@@ -309,6 +309,7 @@ export function recordRuleProblems(record, content) {
     if ((content.problem_ref === null) !== (content.n === "1")) p.push("problem_ref must be null exactly for n = 1");
     if ((content.topic_ref !== null) !== (content.n === "1")) p.push("topic_ref must be set exactly for n = 1");
     if (content.n !== "1" && content.parents.length) p.push("only revision 1 declares parents");
+    if (record.content_schema === "pubphys.content.revision/3" && content.n !== "1") p.push("revision content version 3 is only for n = 1");
     if (content.external_id !== null && kind !== "seed") p.push("external_id is only for seed revisions");
     if (content.parents.some(x => !record.parents.includes(x.parent_revision))) p.push("declared parents must appear in record.parents");
   }
@@ -657,6 +658,14 @@ function schemaFor(name) {
   return Object.hasOwn(SCHEMAS, name) ? SCHEMAS[name] : null;
 }
 
+// The content schema a record names (SPEC section 6): version 1 is content.<type>, a later
+// version content.<type>.<version>; null when the set has none or the name does not match the type.
+export function contentSchemaFor(record) {
+  const m = /^pubphys\.content\.([a-z][a-z-]{0,39})\/([1-9][0-9]*)$/.exec(String(record.content_schema));
+  if (!m || m[1] !== record.type) return null;
+  return schemaFor(m[2] === "1" ? `content.${m[1]}` : `content.${m[1]}.${m[2]}`);
+}
+
 // Structure checks. Returns { status: "verified" | "not_checked" | "failed", notes }.
 export function checkStructure(bundle) {
   const failed = notes => ({ status: "failed", notes: notes.slice(0, 3) });
@@ -670,7 +679,7 @@ export function checkStructure(bundle) {
     }
     const version = record.content_schema.split("/").pop();
     if (record.content_schema !== `pubphys.content.${record.type}/${version}`) return failed(["content_schema does not match type"]);
-    const contentSchema = version === "1" ? schemaFor("content." + record.type) : null;
+    const contentSchema = contentSchemaFor(record);
     let status = "verified";
     const notes = [];
     if (!contentSchema) { status = "not_checked"; notes.push(`unknown content schema ${record.content_schema}`); }
@@ -848,4 +857,47 @@ export async function verifyBundle(input, rawTrust) {
   }
 
   return { parts, notes, recordHash, envelopeHash };
+}
+
+// ---------- reveal pairs (phase 4b plan 6.4) ----------
+
+const PAIR_PARTS = ["structure", "content", "identity", "platform", "log"];
+
+// The relation between a reveal record and the sealed record it reveals.
+// The content schemas a reveal may target: content version 3, which carries the nonce.
+const SEALED_SCHEMAS = ["pubphys.content.claim/3", "pubphys.content.revision/3"];
+
+export function revealRelationProblems(reveal, sealed, sealedHash) {
+  const p = [];
+  if (reveal.type !== "reveal") p.push("the first bundle is not a reveal");
+  if (reveal.target !== sealedHash) p.push("the reveal's target is not the sealed record");
+  if (!SEALED_SCHEMAS.includes(sealed.content_schema)) p.push("the target is not a sealed record (content version 3)");
+  if (sealed.author.orcid === null) p.push("the sealed record names no ORCID iD");
+  else if (reveal.author.orcid !== sealed.author.orcid) p.push("the reveal and the sealed record name different ORCID iDs");
+  return p;
+}
+
+// The pair verdict from both bundle results: failed if the relation fails or either bundle has a
+// failed part, verified only if both have structure, content, identity, platform and log verified.
+export function revealPairStatus(relation, reveal, sealed) {
+  if (relation.length || [reveal, sealed].some(r => Object.values(r.parts).includes("failed"))) return "failed";
+  return [reveal, sealed].every(r => PAIR_PARTS.every(k => r.parts[k] === "verified")) ? "verified" : "not_checked";
+}
+
+export function revealPairRelation(revealInput, sealedInput, reveal, sealed) {
+  if (reveal.parts.structure === "failed" || sealed.parts.structure === "failed") return [];
+  const parse = x => (typeof x === "string" ? parseJsonStrict(x) : x);
+  return revealRelationProblems(parse(revealInput).record, parse(sealedInput).record, sealed.recordHash);
+}
+
+// A reveal pair: the reveal's bundle with the bundle of the sealed record it reveals. The seal date
+// is the sealed record's earliest valid Bitcoin anchor, never its created; this function checks no
+// anchors, so it is not_checked here (verify_full.js verifyRevealFull checks them).
+export async function verifyRevealPair(revealInput, sealedInput, trust, sealedTrust = trust) {
+  const reveal = await verifyBundle(revealInput, trust);
+  const sealed = await verifyBundle(sealedInput, sealedTrust);
+  const relation = revealPairRelation(revealInput, sealedInput, reveal, sealed);
+  const notes = [...relation.map(n => "pair: " + n), ...reveal.notes.map(n => "reveal: " + n), ...sealed.notes.map(n => "sealed: " + n)];
+  notes.push("seal date: not_checked (the sealed record's earliest valid Bitcoin anchor; this verifier checks no anchors)");
+  return { status: revealPairStatus(relation, reveal, sealed), notes, reveal, sealed, sealDate: { status: "not_checked", time: null } };
 }
