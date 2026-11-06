@@ -59,7 +59,7 @@
   },
   "log": {
     "leaf_index": "0",
-    "tree_size": "3843",
+    "tree_size": "3844",
     "proof": [
       "58836c86c2734abdaa4ffe8a0ad6421e437f9216e017f56c8fb45df2667715bc",
       "dca9f634ec0f9ec4393b267aa5f2eb1aad7e8f47e3c43d419ca03dcbe9e251db",
@@ -72,9 +72,9 @@
       "1da5c96b3985187a1efdf51c7989e95be747ec96b1a693805f379a3be63f556d",
       "163bc19e4d81543929a9858fd69dec06a5e93908e5f6ba4d891e7a5e0a43c278",
       "ec3fa24572dee1df200ec665f3e3244d925b199f0f84e225b820c3b66bd7b094",
-      "f6e268c787b18c72cf4d8c9be6b3ae4226483f9db374b2729b22985e9cbae8de"
+      "60709f6d9ebd61cc01dae731ccca1448ccb59043f7971621ce66b3398aa508b7"
     ],
-    "checkpoint": "pubphys.com/log/v1\n3843\n1PQlb2tu3wu24K2b4g03Wt2YH/w0lOWvUJvu8yANS5I=\n\n— pubphys.com/log/v1 JFPwID/nBfEoBXCaY03DJ74PgeuDPDNmcnKviaa2XfSMawO0arSN6+IkRfxtJ2JWxBqoqjl1Vu3Eh0ZNNnk6NqRWeQY=\n",
+    "checkpoint": "pubphys.com/log/v1\n3844\nddN7yvtDZEjKv5yhQcrmaH2nfArgwuwbaR/frfFzb/U=\n\n— pubphys.com/log/v1 JFPwILKSGna6VtnCPeoOK/7vEs7oNxdPS5uV6lsf2ByqOnKAo7dv1y1z1MKvIohWmQuh1NuM/m7yGEQS9YB2fc9qkg0=\n",
     "promise": null
   },
   "orcid_key_evidence": [],
