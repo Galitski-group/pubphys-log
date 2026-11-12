@@ -9,6 +9,10 @@ const enc = new TextEncoder();
 // ignoreBOM: a byte-order mark is kept and then refused (SPEC 1), as in Ruby (review F27, A12).
 const dec = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 const subtle = globalThis.crypto.subtle;
+// Whether a string is well-formed Unicode (no lone surrogate). String.prototype.isWellFormed is newer
+// than the browsers the site supports (Safari 16.4, Chrome 111, Firefox 119); encodeURIComponent throws
+// a URIError on exactly the strings it rejects, so every browser gets the same answer.
+const wellFormed = s => { try { encodeURIComponent(s); return true; } catch { return false; } };
 
 export const SITE = "pubphys.com";
 export const LOG_NAME = "pubphys.com/log/v1";
@@ -95,7 +99,7 @@ const JSON_NUMBER = /^-?(?:0|[1-9][0-9]*)(?![0-9.eE])/;
 const JSON_MAX_DEPTH = 32;
 
 export function parseJsonStrict(text) {
-  if (typeof text !== "string" || !text.isWellFormed()) throw new ProtocolError("invalid JSON: not valid Unicode");
+  if (typeof text !== "string" || !wellFormed(text)) throw new ProtocolError("invalid JSON: not valid Unicode");
   let i = 0;
   const ws = () => { while (i < text.length && " \t\n\r".includes(text[i])) i++; };
   const fail = msg => { throw new ProtocolError(`invalid JSON at ${i}: ${msg}`); };
@@ -104,7 +108,7 @@ export function parseJsonStrict(text) {
     if (!m) fail("invalid string");
     i += m[0].length;
     const v = JSON.parse(m[0]);
-    if (!v.isWellFormed()) fail("string is not valid Unicode");
+    if (!wellFormed(v)) fail("string is not valid Unicode");
     return v;
   };
   const value = depth => {
@@ -165,7 +169,7 @@ export function parseJsonStrict(text) {
 // ---------- canonical form (SPEC section 2) ----------
 
 function escapeString(s) {
-  if (!s.isWellFormed()) throw new CanonicalError("string is not valid Unicode");
+  if (!wellFormed(s)) throw new CanonicalError("string is not valid Unicode");
   let out = "\"";
   for (const ch of s) {
     const c = ch.codePointAt(0);
@@ -242,7 +246,7 @@ function typeOf(v) {
   if (v === null) return "null";
   if (Array.isArray(v)) return "array";
   if (typeof v === "number") return Number.isInteger(v) ? "integer" : "number";
-  if (typeof v === "string" && !v.isWellFormed()) return "invalid string";
+  if (typeof v === "string" && !wellFormed(v)) return "invalid string";
   return typeof v;
 }
 
@@ -470,10 +474,46 @@ export async function keyId(publicKeyB64url) {
   return sha256hex(fromB64url(publicKeyB64url));
 }
 
+// WebCrypto's Ed25519 where the browser has it; elsewhere (Chrome < 137, Safari < 17, Firefox < 129) the
+// vendored @noble/ed25519, loaded only then, in its strict RFC 8032 mode (zip215: false). Verification
+// only: nothing that is hashed or signed depends on which one ran.
+//
+// noble checks the cofactored equation [8][S]B = [8]R + [8][k]A, so on its own it would accept a signature
+// whose R carries a small-order component (R = rB + T) or a mixed-order public key (A + T), which WebCrypto,
+// OpenSSL and the Ruby verifier (cofactorless: [S]B - [k]A must encode exactly as R) refuse. The fallback
+// therefore also requires A and R to be canonically encoded points of the prime-order subgroup; then both
+// sides of the equation lie in that subgroup, where multiplying by 8 is one-to-one. The fallback never accepts
+// what WebCrypto/OpenSSL refuse; it may refuse some exotic signatures they accept (fails closed).
+let ed25519Fallback = null;
 export async function ed25519Verify(publicKeyBytes, signature, message) {
   if (publicKeyBytes.length !== 32 || signature.length !== 64) return false;
-  const key = await subtle.importKey("raw", publicKeyBytes, { name: "Ed25519" }, false, ["verify"]);
-  return subtle.verify("Ed25519", key, signature, message);
+  if (!ed25519Fallback) {
+    let key;
+    try {
+      key = await subtle.importKey("raw", publicKeyBytes, { name: "Ed25519" }, false, ["verify"]);
+    } catch (e) {
+      if (e?.name !== "NotSupportedError") throw e;
+      ed25519Fallback = await import("./noble_ed25519.js");
+    }
+    if (key) return subtle.verify("Ed25519", key, signature, message);
+  }
+  if (!(await ed25519Fallback.verifyAsync(signature, message, publicKeyBytes, { zip215: false }))) return false;
+  return primeOrderPoint(ed25519Fallback.Point, publicKeyBytes) && primeOrderPoint(ed25519Fallback.Point, signature.subarray(0, 32));
+}
+
+function primeOrderPoint(Point, bytes) {
+  try {
+    const point = Point.fromBytes(bytes);
+    return point.isTorsionFree() && equalBytes(point.toBytes(), bytes);
+  } catch {
+    return false;
+  }
+}
+
+function equalBytes(a, b) {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
 }
 
 async function keyById(id, keys) {
@@ -592,7 +632,7 @@ export async function noteKeyHash(name, publicKeyBytes) {
 }
 
 export function parseNote(text) {
-  if (typeof text !== "string" || !text.isWellFormed() || /[\x00-\x09\x0b-\x1f]/.test(text)) throw new ProtocolError("note has invalid characters");
+  if (typeof text !== "string" || !wellFormed(text) || /[\x00-\x09\x0b-\x1f]/.test(text)) throw new ProtocolError("note has invalid characters");
   const split = text.lastIndexOf("\n\n");
   if (split < 0) throw new ProtocolError("note has no signature block");
   const body = text.slice(0, split + 1);
