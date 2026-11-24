@@ -1,0 +1,91 @@
+{
+  "schema": "pubphys.bundle/1",
+  "record": {
+    "author": {
+      "account_ref": null,
+      "orcid": null
+    },
+    "builds_on": [],
+    "content_schema": "pubphys.content.jwks/1",
+    "content_sha256": "bf5ad420823374b49575ffa4e50e95c9064b40bf0d784070b9b988e35b9458c0",
+    "created": "2026-11-24T21:20:07Z",
+    "files": [
+      {
+        "id": "jwks",
+        "media_type": "application/json",
+        "name": "jwks.json",
+        "sha256": "a4ddde846cf841da53894ae205877d85f3353fb839063a895cff5b6ed60faab9",
+        "size": "458"
+      }
+    ],
+    "origin": {
+      "assisted_by": [],
+      "kind": "platform"
+    },
+    "parents": [],
+    "salt": "0372571a0f17123e51732da505f0d61dd4f2f0c1738394eb1a3afa57e2c868c0",
+    "schema": "pubphys.record/2",
+    "site": "pubphys.com",
+    "target": null,
+    "type": "jwks"
+  },
+  "content": {
+    "captures": [
+      "https://web.archive.org/web/20261124212000/https://orcid.org/oauth/jwks"
+    ],
+    "jwks_file_id": "jwks",
+    "url": "https://orcid.org/oauth/jwks"
+  },
+  "content_withheld": "false",
+  "files": [
+    {
+      "id": "jwks",
+      "data": "eyJrZXlzIjpbeyJrdHkiOiJSU0EiLCJlIjoiQVFBQiIsInVzZSI6InNpZyIsImtpZCI6InByb2R1Y3Rpb24tb3JjaWQtb3JnLTdoZG1kc3dhcm9zZzNnanVqbzhhZ3d0YXpna3Axb2pzIiwibiI6Imp4VEludEE3WXZkZm5Za0xTTjR3a19fRTJ6Zl93YmIwU1ZfSExIRnZoNmE5RU5WUkQxX3JISzBFaWpsQnppa2ItMXJnRFFpaEpFVGNnQkxzTW9aVlFxR2o4ZkRVVXV4blZIc3VHYXZfYmY0MVBBN0VfNThIWEtQckIyQzBjT040MWY3SzNvOVRTdEtwVkpPU1hCclJXVVJtTlE2NHFuU1NyeW4xbkN4TXpYcGF3N1ZVbzQwOW9oeWJidk42bmd4Vnk0UVIyTkNDN0ZyMFFWZHRhcHhEN3pkbHd4NmxFd0dlbXVxc19vRzVvRHRyUnVSZ2VPSG1ScHMyUjZnRzVvYy1KcVZNclZSdjZGOWg0amEzVWd4Q0RCUWpPVlQxQkZQV21NSG5IQ3NWWUxxYmJYa1pVZnZQMnNPMWRKaVlkX3pyUWhpLUZ0TnRoOXFyTEx2M2drZ3R3USJ9XX0"
+    }
+  ],
+  "attested": {
+    "attestation": {
+      "batch": null,
+      "client_id": null,
+      "id_token_sha256": null,
+      "kind": "platform"
+    },
+    "record_hash": "eadd06f2e4d3105ed5894b5e690d744463e60711439262df0de3dc7e6b702d2d",
+    "schema": "pubphys.attested/1"
+  },
+  "id_token": null,
+  "id_token_withheld": "false",
+  "envelope": {
+    "attested_hash": "622367383c0190f7e95016899fb09acae04368be6e713be85c78563adebfa3e3",
+    "platform_signature": {
+      "key_id": "c6afc19b31429869751f06879c75cd64ea92654423d15b44be775bf1310a60da",
+      "sig": "DGQRgX_2r6zVgjOgQh_Wgq4BzU8P_0g5CrWCp7ARdxRiLI7dus76jR8p2QgRMhxo0962LtDGZy1R9UYBJwi5AA"
+    },
+    "schema": "pubphys.envelope/1"
+  },
+  "ots": {
+    "attested": [
+      "AE9wZW5UaW1lc3RhbXBzAABQcm9vZgC_ieLohOiSlAEIYiNnODwBkPfpUBaJn7CayuBDaL5ucTvoXHhWOt6_o-PxIAj4jalirN7j2PFQRlQWaYk7lHDVTJwz7wz6n-Y1tirdCP_wCGYOwz8boNJSCPEgNOWJr9qEMDLLAIu43y8g-E4nOfOZYTXjIEBahsE60oII8BCNaAI9wmv4MqzMBZpP35bHCPEgyrORV8grNxwIULoruqzsW3MqdMByQguY9jyY4yfLU0EI8CAZm_9fktkT93KNyfjcRqtGKMbDGk9S_StWmxr0V_uLzAjxIMP14GFwFb-bCR0Fv__wm5kxQe4v7m-kY9T0EkxSGVvGCPAgVe5ybaKD7rfgbfI3zaC5BAau0xWJoAgUqfS2dGHJiu4I8QRrBgHb8AhxjO-8S8tZIwCD3-MNLvkMjiwraHR0cHM6Ly9ib2IuYnRjLmNhbGVuZGFyLm9wZW50aW1lc3RhbXBzLm9yZ_AIzbP7WX_Vtt0I8CC0lQFPaGEzqHEAyCYe0hyd5Rzx2DBINswgpKfssP5CiwjwICy7u7wLSilSZjiBMhRc-apqPrk1O_lugU97UY3cVl2XCPAQUnetyOIg3xrAtm_oMqjffwjxIESIu_F9WqgSYsFJiL2pwt_fMoFgXMK7PTCN1Du79tHTCPAgGmNY3srT1YhhLnk_GJqAYKN5cgOjLeNryNx75kAtKMoI8CAObwY8I2kPJVv-2u2O5OYVdfamNY9W9cjJ2gzNgKBSiAjxBGsGAdnwCPplWT3tDl_uAIPf4w0u-QyOLi1odHRwczovL2FsaWNlLmJ0Yy5jYWxlbmRhci5vcGVudGltZXN0YW1wcy5vcmc"
+    ],
+    "envelope": [
+      "AE9wZW5UaW1lc3RhbXBzAABQcm9vZgC_ieLohOiSlAEICPiNqWKs3uPY8VBGVBZpiTuUcNVMnDPvDPqf5jW2Kt3wIGIjZzg8AZD36VAWiZ-wmsrgQ2i-bnE76Fx4Vjrev6PjCP_wCGYOwz8boNJSCPEgNOWJr9qEMDLLAIu43y8g-E4nOfOZYTXjIEBahsE60oII8BCNaAI9wmv4MqzMBZpP35bHCPEgyrORV8grNxwIULoruqzsW3MqdMByQguY9jyY4yfLU0EI8CAZm_9fktkT93KNyfjcRqtGKMbDGk9S_StWmxr0V_uLzAjxIMP14GFwFb-bCR0Fv__wm5kxQe4v7m-kY9T0EkxSGVvGCPAgVe5ybaKD7rfgbfI3zaC5BAau0xWJoAgUqfS2dGHJiu4I8QRrBgHb8AhxjO-8S8tZIwCD3-MNLvkMjiwraHR0cHM6Ly9ib2IuYnRjLmNhbGVuZGFyLm9wZW50aW1lc3RhbXBzLm9yZ_AIzbP7WX_Vtt0I8CC0lQFPaGEzqHEAyCYe0hyd5Rzx2DBINswgpKfssP5CiwjwICy7u7wLSilSZjiBMhRc-apqPrk1O_lugU97UY3cVl2XCPAQUnetyOIg3xrAtm_oMqjffwjxIESIu_F9WqgSYsFJiL2pwt_fMoFgXMK7PTCN1Du79tHTCPAgGmNY3srT1YhhLnk_GJqAYKN5cgOjLeNryNx75kAtKMoI8CAObwY8I2kPJVv-2u2O5OYVdfamNY9W9cjJ2gzNgKBSiAjxBGsGAdnwCPplWT3tDl_uAIPf4w0u-QyOLi1odHRwczovL2FsaWNlLmJ0Yy5jYWxlbmRhci5vcGVudGltZXN0YW1wcy5vcmc"
+    ]
+  },
+  "log": {
+    "leaf_index": "3878",
+    "tree_size": "3879",
+    "proof": [
+      "807c19d0809f0b25abd9230dd0fb79531a42c62899c9dcb24314488fd9d320ad",
+      "9d5054261e47ce624a744548062bcbb3678816ee95f99fac981c4948f0d135ed",
+      "e830ae60321ac6e9a47c2149546c36a44b6dd71750eb3d798294969878373e6a",
+      "bf31f36d7d7344b6610bdc7c359eca8e53ecc677edbb4a17cccf22a624bbf9af",
+      "e55158332fc5066d8199fad50d3929c561e805c1a4826619f59cd2254d322eb8",
+      "af34d80d0065c0ab502282775e865492e2cb49c9493f4594d63ba5577922854a",
+      "3c578dccc15502c5f3efe228cadc99fee76ab536ed01f66b14d316fdcc157429"
+    ],
+    "checkpoint": "pubphys.com/log/v1\n3879\nD9dJLdgVB2Y5wfYBOABItMRtpLYUuc6GkCAANk1+c4I=\n\n— pubphys.com/log/v1 JFPwIBWliWEecsFyvqnq89H9zOdR8BeHw/iKUttONEloKjX5o92qb3gMaluC7N3VHTmQ4y2dfpkZvVgswj5CA4GRygM=\n",
+    "promise": null
+  },
+  "orcid_key_evidence": [],
+  "attesting": null
+}
